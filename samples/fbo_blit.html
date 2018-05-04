@@ -125,8 +125,8 @@
         loadImage('../assets/img/Di-3d.png', function(image) {
 
             var FRAMEBUFFER_SIZE = {
-                x: image.width,
-                y: image.height
+                x: image.width * 2,
+                y: image.height * 2
             };
 
             // -- Init Texture
@@ -172,9 +172,9 @@
 
             // Render FBO
             var SCALE = new Float32Array([
-                0.8, 0.0, 0.0, 0.0,
-                0.0, 0.8, 0.0, 0.0,
-                0.0, 0.0, 0.8, 0.0,
+                1.0, 0.0, 0.0, 0.0,
+                0.0, 1.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
                 0.0, 0.0, 0.0, 1.0
             ]);
             gl.uniformMatrix4fv(mvpLocation, false, SCALE);
@@ -188,25 +188,15 @@
             gl.bindFramebuffer(gl.READ_FRAMEBUFFER, framebufferRender);
             gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebufferResolve);
             gl.clearBufferfv(gl.COLOR, 0, [0.7, 0.0, 0.0, 1.0]);
+            gl.viewport(0, 0, FRAMEBUFFER_SIZE.x / 2, FRAMEBUFFER_SIZE.y / 2);
 
-            var TILE = 4;
-            var BORDER = 2;
-            for(var j = 0; j < TILE; j++) {
-                for(var i = 0; i < TILE; i++) {
-                    if((i + j) % 2) {
-                        continue;
-                    }
-
-                    gl.blitFramebuffer(
-                        0, 0, FRAMEBUFFER_SIZE.x, FRAMEBUFFER_SIZE.y,
-                        FRAMEBUFFER_SIZE.x / TILE * (i + 0) + BORDER,
-                        FRAMEBUFFER_SIZE.x / TILE * (j + 0) + BORDER,
-                        FRAMEBUFFER_SIZE.y / TILE * (i + 1) - BORDER,
-                        FRAMEBUFFER_SIZE.y / TILE * (j + 1) - BORDER,
-                        gl.COLOR_BUFFER_BIT, gl.LINEAR
-                    );
-                }
-            }
+            gl.blitFramebuffer(
+                0, 0, FRAMEBUFFER_SIZE.x / 2, FRAMEBUFFER_SIZE.y / 2,
+                0, 0,
+                FRAMEBUFFER_SIZE.x,
+                FRAMEBUFFER_SIZE.y,
+                gl.COLOR_BUFFER_BIT, gl.LINEAR
+            );
 
             // Pass 2
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
